@@ -1063,6 +1063,46 @@ func funcYear(vals []parser.Value, args parser.Expressions, enh *EvalNodeHelper)
 	})
 }
 
+// === deseasonalize(...) Vector ===
+func funcDeseasonalize(vals []parser.Value, args parser.Expressions, enh *EvalNodeHelper) Vector {
+	// See funcVector or funcPredictLinear or funcHoltWinters for examples
+	// TODO this seems to be a scalar?
+	nFreqs := vals[0].(Vector)[0].V
+	samples := vals[1].(Matrix)[0]
+
+	nPoints := len(samples.Points)
+	if nPoints == 0 {
+		return enh.Out
+	}
+
+	if nFreqs == 0 {
+		for i := 0; i < nPoints; i++ {
+			enh.Out = append(enh.Out, Sample{
+				Point: samples.Points[i],
+			})
+		}
+		return enh.Out
+	}
+
+	// TODO rotated, i  := RotateToMax([samples.Points[i].V for i in range nFreqs])
+	// TODO freqs := DCT(rotated)
+	// TODO sorted := sortHeap(freqs, nFreqs)
+	// TODO for i, _ := sorted { freqs[i] = 0 }
+	// TODO altered := IDCT(freqs)
+	// TODO return Unrotate(i, altered)
+
+	// sortHeap := import container/heap. heap := IntHeap(nFreqs). compare/push all elements. pop just nFreqs.
+
+	// Point: samples.Points[i].V,
+	// samples.Points[i].V
+
+	// TODO try returning a Matrix
+	return append(enh.Out, Sample{
+		// Metric: labels.Labels{},
+		Point:  Point{V: nFreqs},
+	})
+}
+
 // FunctionCalls is a list of all functions supported by PromQL, including their types.
 var FunctionCalls = map[string]FunctionCall{
 	"abs":                funcAbs,
@@ -1089,6 +1129,7 @@ var FunctionCalls = map[string]FunctionCall{
 	"deg":                funcDeg,
 	"delta":              funcDelta,
 	"deriv":              funcDeriv,
+	"deseasonalize":      funcDeseasonalize,
 	"exp":                funcExp,
 	"floor":              funcFloor,
 	"histogram_quantile": funcHistogramQuantile,

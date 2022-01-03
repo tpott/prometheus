@@ -147,6 +147,11 @@ var Functions = map[string]*Function{
 		ArgTypes:   []ValueType{ValueTypeMatrix},
 		ReturnType: ValueTypeVector,
 	},
+	"deseasonalize": {
+		Name:       "deseasonalize",
+		ArgTypes:   []ValueType{ValueTypeScalar, ValueTypeMatrix}, // ValueTypeVect or ValueTypeMatrix?
+		ReturnType: ValueTypeMatrix, // ValueTypeVector,
+	},
 	"exp": {
 		Name:       "exp",
 		ArgTypes:   []ValueType{ValueTypeVector},

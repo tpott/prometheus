@@ -168,10 +168,10 @@ func (c *flagConfig) setFeatureListOptions(logger log.Logger) error {
 			switch o {
 			case "promql-at-modifier":
 				c.enablePromQLAtModifier = true
-				level.Info(logger).Log("msg", "Experimental promql-at-modifier enabled")
+				level.Info(logger).Log("msg", "promql-at-modifier enabled")
 			case "promql-negative-offset":
 				c.enablePromQLNegativeOffset = true
-				level.Info(logger).Log("msg", "Experimental promql-negative-offset enabled")
+				level.Info(logger).Log("msg", "promql-negative-offset enabled")
 			case "remote-write-receiver":
 				c.web.RemoteWriteReceiver = true
 				level.Info(logger).Log("msg", "Experimental remote-write-receiver enabled")

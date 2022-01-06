@@ -76,7 +76,10 @@ Maintaining the release branches for older minor releases happens on a best effo
 
 A few days before a major or minor release, consider updating the dependencies.
 
-Then create a pull request against the main branch.
+Note that we use [Dependabot](.github/dependabot.yml) to automatically update most things.
+See the [dependencies GitHub label](https://github.com/prometheus/prometheus/labels/dependencies) for a list of pending updates.
+
+This bot currently does not manage `+incompatible` and `v0.0.0` in the version specifier for Go modules.
 
 Note that after a dependency update, you should look out for any weirdness that
 might have happened. Such weirdnesses include but are not limited to: flaky
@@ -87,7 +90,7 @@ you can skip the dependency update or only update select dependencies. In such a
 case, you have to create an issue or pull request in the GitHub project for
 later follow-up.
 
-#### Updating Go dependencies
+#### Manually updating Go dependencies
 
 ```
 make update-go-deps
@@ -95,15 +98,20 @@ git add go.mod go.sum
 git commit -m "Update dependencies"
 ```
 
-#### Updating React dependencies
+#### Manually updating React dependencies
 
 The React application recently moved to a monorepo system with multiple internal npm packages. Dependency upgrades are
 quite sensitive for the time being and should be done manually with caution. 
 
+To see a list of available updates:
+
+```
+cd web/ui
+npm outdated
+```
+
 When you want to update a dependency, you have to go to every internal npm package where the dependency is used and
 manually change the version. Once you have taken care of that, you need to go back to `web/ui` and run `npm install`
-
-**NOTE**: We are researching ways to automate and improve this.
 
 ### 1. Prepare your release
 

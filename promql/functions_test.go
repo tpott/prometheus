@@ -84,3 +84,45 @@ func TestKahanSum(t *testing.T) {
 	expected := 2.0
 	require.Equal(t, expected, kahanSum(vals))
 }
+
+func TestDeseasonalize(t *testing.T) {
+	// This is mostly copied from TestDeriv
+	ctx := context.Background()
+	storage := teststorage.New(t)
+	defer storage.Close()
+	opts := EngineOpts{
+		Logger:     nil,
+		Reg:        nil,
+		MaxSamples: 10000,
+		Timeout:    10 * time.Second,
+	}
+	engine := NewEngine(opts)
+
+	a := storage.Appender(ctx)
+
+	// TODO Append values that I want
+	// TODO `deseasonalize(0, prometheus_http_request_duration_seconds_bucket[1m])`
+
+	metric := labels.FromStrings("__name__", "foo")
+	start := 1493712816939
+	interval := 30 * 1000
+	// Introduce some timestamp jitter to test 0 slope case.
+	// https://github.com/prometheus/prometheus/issues/7180
+	for i := 0; i < 15; i++ {
+		jitter := 12 * i % 2
+		a.Append(0, metric, int64(start+interval*i+jitter), 1)
+	}
+
+	require.NoError(t, a.Commit())
+
+	query, err := engine.NewInstantQuery(storage, "deseasonalize(1, foo[30m])", timestamp.Time(1493712846939))
+	require.NoError(t, err)
+
+	result := query.Exec(ctx)
+	require.NoError(t, result.Err)
+
+	vec, _ := result.Vector()
+	require.Equal(t, 1, len(vec), "Expected 1 result, got %d", len(vec))
+	require.Equal(t, 0.0, vec[0].V, "Expected 0.0 as value, got %f", vec[0].V)
+
+}
